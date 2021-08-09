@@ -1,0 +1,23 @@
+# Framework for backend
+fastapi
+
+# ASGI server to serve the app
+uvicorn
+
+# for env variables
+python-dotenv
+
+# For databases
+asyncpg
+tortoise-orm
+
+# For migrations
+aerich
+
+# For testing
+pytest
+requests
+pytest-cov
+
+# For model validations
+pydantic
