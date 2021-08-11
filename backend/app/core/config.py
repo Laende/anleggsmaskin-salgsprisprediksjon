@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = getenv("ENVIRONMENT")
     TESTING: bool = getenv("TESTING")
 
-    DATABASE_TEST_URL: AnyUrl = getenv("DATABASE_TEST_URL")
+    DATABASE_TEST_URL = getenv("DATABASE_TEST_URL")
 
     # Model related stuff
     DEFAULT_MODEL_PATH: str = getenv("DEFAULT_MODEL_PATH")
@@ -34,6 +34,7 @@ class Settings(BaseSettings):
         if url.startswith("postgres://"):
             url = url.replace("postgres://", "postgresql://", 1)
         return url
+
 
 @lru_cache()
 def get_settings() -> BaseSettings:

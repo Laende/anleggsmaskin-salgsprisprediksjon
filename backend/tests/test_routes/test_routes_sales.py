@@ -7,7 +7,7 @@ from tests.data import TEST_IN_DATA
 
 def test_create_sale(client) -> None:
     response = client.post("/sales/create-sale", data=json.dumps(TEST_IN_DATA))
-
+    print(get_settings().DATABASE_TEST_URL)
     assert response.status_code == 200
     assert response.json()["model_id"] == TEST_IN_DATA["model_id"]
     assert response.json()["saledate"] == TEST_IN_DATA["saledate"]

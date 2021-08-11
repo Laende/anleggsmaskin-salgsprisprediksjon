@@ -15,8 +15,11 @@ from app.db.models.sales import Sales
 log = getLogger("uvicorn")
 settings = get_settings()
 
+if settings.TESTING:
+    ENGINE: Engine = create_engine(settings.DATABASE_TEST_URL, connect_args={"check_same_thread": False})
+else:
+    ENGINE: Engine = create_engine(settings.DATABASE_URL)
 
-ENGINE: Engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
 SESSION: Session = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE)
 
 def get_db() -> Generator:

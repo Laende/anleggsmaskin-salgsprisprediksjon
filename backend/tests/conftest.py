@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from app.core.config import get_settings
 from app.apis.base import api_router
 from app.core.config import Settings
 from app.core.regressor import SalePriceRegressor
@@ -19,24 +20,22 @@ from app.db.session import get_db
 
 
 log = getLogger("uvicorn")
-
-def get_settings_override():
-    return Settings(TESTING=1)
+settings = get_settings()
 
 
 def start_application():
-    settings = get_settings_override()
     app = FastAPI()
     app.include_router(api_router, prefix="")
-
     model_path = settings.DEFAULT_MODEL_PATH
     model_instance = SalePriceRegressor(path=model_path)
     app.state.model = model_instance
     return app
+    
 
-
-settings = get_settings_override()
-engine = create_engine(settings.DATABASE_TEST_URL)
+engine = create_engine(
+    settings.DATABASE_TEST_URL,
+    connect_args={"check_same_thread": False}
+    )
 SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
