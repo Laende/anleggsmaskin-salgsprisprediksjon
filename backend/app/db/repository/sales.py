@@ -1,11 +1,10 @@
 from logging import getLogger
 
-from sqlalchemy import desc
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import false
 
 from app.db.models.sales import Sales
 from app.schemas.sales import SalesCreate
+
 
 log = getLogger("uvicorn")
 
@@ -24,8 +23,11 @@ def retrieve_sales_by_new(is_new: bool, db: Session):
     return sales
 
 
-def list_sales(limit: int, order_by: str, db: Session):
-    sales = db.query(Sales).order_by(desc(order_by)).limit(limit).all()
+def list_sales(limit: int, db: Session):
+    MAX_LIMIT = 100
+    if limit >= MAX_LIMIT:
+        limit = 100
+    sales = db.query(Sales).limit(limit).all()
     return sales
 
 

@@ -1,12 +1,13 @@
 import os
 import sys
 from typing import Any, Generator
+from logging import getLogger
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -17,14 +18,16 @@ from app.db.base import Base
 from app.db.session import get_db
 
 
+log = getLogger("uvicorn")
+
 def get_settings_override():
-    return Settings(TESTING=1, DATABASE_URL=os.getenv("DATABASE_TEST_URL"))
+    return Settings(TESTING=1)
 
 
 def start_application():
     settings = get_settings_override()
     app = FastAPI()
-    app.include_router(api_router, prefix=settings.PROJECT_API_PREFIX)
+    app.include_router(api_router, prefix="")
 
     model_path = settings.DEFAULT_MODEL_PATH
     model_instance = SalePriceRegressor(path=model_path)
@@ -33,7 +36,7 @@ def start_application():
 
 
 settings = get_settings_override()
-engine = create_engine(settings.DATABASE_URL)
+engine = create_engine(settings.DATABASE_TEST_URL)
 SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

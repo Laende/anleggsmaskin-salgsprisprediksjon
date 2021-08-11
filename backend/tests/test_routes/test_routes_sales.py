@@ -1,5 +1,7 @@
 import json
 
+from app.core.config import get_settings
+
 from tests.data import TEST_IN_DATA
 
 
@@ -41,18 +43,20 @@ def test_retrieve_sale_by_non_existing_id(client) -> None:
 
 def test_delete_sale_by_id(client) -> None:
     client.post("/sales/create-sale", data=json.dumps(TEST_IN_DATA))
+    headers = {"token": str(get_settings().API_KEY)}
 
     # Try to delete the recently created sale (it will have id of 1)
-    response = client.delete("/sales/delete/1")
+    response = client.delete("/sales/delete/1", headers=headers)
     assert response.status_code == 200
     assert response.json() == True
 
 
 def test_delete_sale_by_non_existing_id(client) -> None:
+    headers = {"token": str(get_settings().API_KEY)}
     client.post("/sales/create-sale", data=json.dumps(TEST_IN_DATA))
 
     # Try to delete a sale that doesnt exist (there should be 1 sale in the db with id 1)
-    response = client.delete("/sales/delete/2")
+    response = client.delete("/sales/delete/2", headers=headers)
     assert response.status_code == 404
     assert response.json()["detail"] == "Sale with id 2 does not exist."
 

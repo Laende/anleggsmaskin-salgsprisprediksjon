@@ -1,6 +1,6 @@
 from logging import getLogger
 from typing import Callable
-
+from os import getenv
 from fastapi import FastAPI
 
 from app.core.config import get_settings
@@ -9,14 +9,13 @@ from app.db.base import Base
 from app.db.session import ENGINE, init_db
 
 log = getLogger("uvicorn")
-
+settings = get_settings()
 
 def _create_tables():
     Base.metadata.create_all(bind=ENGINE)
 
 
 def _startup_model(app: FastAPI) -> None:
-    settings = get_settings()
     model_path = settings.DEFAULT_MODEL_PATH
     log.info("Initialising Regression model.")
     model_instance = SalePriceRegressor(path=model_path)
@@ -39,7 +38,6 @@ def start_app_handler(app: FastAPI) -> Callable:
         log.info("Running app start handler...")
         _startup_database(app)
         _startup_model(app)
-
     return startup
 
 
@@ -47,5 +45,4 @@ def stop_app_handler(app: FastAPI) -> Callable:
     def shutdown() -> None:
         log.info("Running app shutdown handler.")
         _shutdown_model(app)
-
     return shutdown

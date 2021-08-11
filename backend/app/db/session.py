@@ -1,4 +1,4 @@
-import re
+from os import getenv
 from logging import getLogger
 from typing import Generator
 
@@ -11,8 +11,13 @@ from sqlalchemy.orm.session import Session
 from app.core.config import get_settings
 from app.db.models.sales import Sales
 
-log = getLogger("uvicorn")
 
+log = getLogger("uvicorn")
+settings = get_settings()
+
+
+ENGINE: Engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
+SESSION: Session = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE)
 
 def get_db() -> Generator:
     try:
@@ -23,7 +28,6 @@ def get_db() -> Generator:
 
 
 def init_db() -> None:
-    settings = get_settings()
     db = SESSION()
     is_empty = db.query(Sales).first()
     if is_empty is None:
@@ -36,9 +40,5 @@ def init_db() -> None:
         )
         df.drop(["SalesID"], axis=1, inplace=True)
         log.info("Sales table is empty, filling it with dataset.")
-
-        df.to_sql("sales", con=ENGINE, if_exists="append", index=False)
-
-
-ENGINE: Engine = create_engine(get_settings().DATABASE_URL, pool_pre_ping=True)
-SESSION: Session = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE)
+        df2 = df.head(10000)
+        df2.to_sql("sales", con=ENGINE, if_exists="append", index=False)

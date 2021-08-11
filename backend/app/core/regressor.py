@@ -11,7 +11,7 @@ from app.core.config import (get_feature_codes, get_features_list,
 from app.schemas.prediction import SalePricePredictionResult
 from app.schemas.sales import SalesCreate
 
-log = getLogger("uvicorn")
+log = getLogger(__name__)
 
 
 class SalePriceRegressor(object):

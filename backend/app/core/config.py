@@ -8,27 +8,32 @@ from pydantic import AnyUrl, BaseSettings
 from app.core.lists import (ALL_FEATURES_LIST, COLUMN_CODES_FEATURES,
                             DATETIME_LIST, STATE_LIST)
 
-log = getLogger("uvicorn")
+
+log = getLogger(__name__)
 
 
 class Settings(BaseSettings):
-    ### General project settings
-    PROJECT_TITLE: str = getenv("PROJECT_TITLE")
-    PROJECT_VERSION: str = getenv("PROJECT_VERSION")
-    PROJECT_API_PREFIX: str = getenv("PROJECT_API_PREFIX")
-
+    PROJECT_API_PREFIX: str = ""
+    
     ### Environment and development settings
     ENVIRONMENT: str = getenv("ENVIRONMENT")
     TESTING: bool = getenv("TESTING")
 
-    ### Database settings
-    DATABASE_URL: AnyUrl = getenv("DATABASE_URL")
     DATABASE_TEST_URL: AnyUrl = getenv("DATABASE_TEST_URL")
 
     # Model related stuff
     DEFAULT_MODEL_PATH: str = getenv("DEFAULT_MODEL_PATH")
     DEFAULT_DATA_PATH: str = getenv("DEFAULT_DATA_PATH")
 
+    API_KEY: str = getenv("API_KEY")
+
+    @property
+    def DATABASE_URL(self):
+        ### Database settings
+        url: AnyUrl = getenv("DATABASE_URL")
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+        return url
 
 @lru_cache()
 def get_settings() -> BaseSettings:
