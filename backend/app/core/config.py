@@ -1,11 +1,12 @@
-from os import getenv
-from logging import getLogger
 from functools import lru_cache
+from logging import getLogger
+from os import getenv
 from typing import Dict, List
 
 from pydantic import AnyUrl, BaseSettings
 
-from app.core.lists import COLUMN_CODES_FEATURES, ALL_FEATURES_LIST, DATETIME_LIST, STATE_LIST
+from app.core.lists import (ALL_FEATURES_LIST, COLUMN_CODES_FEATURES,
+                            DATETIME_LIST, STATE_LIST)
 
 log = getLogger("uvicorn")
 
@@ -25,11 +26,7 @@ class Settings(BaseSettings):
     DATABASE_TEST_URL: AnyUrl = getenv("DATABASE_TEST_URL")
 
     # Model related stuff
-    if ENVIRONMENT == "dev":
-        DEFAULT_MODEL_PATH: str = getenv("DEFAULT_TEST_MODEL_PATH")
-    else:
-        DEFAULT_MODEL_PATH: str = getenv("DEFAULT_MODEL_PATH")
-        
+    DEFAULT_MODEL_PATH: str = getenv("DEFAULT_MODEL_PATH")
     DEFAULT_DATA_PATH: str = getenv("DEFAULT_DATA_PATH")
 
 

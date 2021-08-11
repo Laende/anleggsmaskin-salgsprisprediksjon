@@ -2,10 +2,10 @@ from pathlib import Path
 
 import numpy as np
 
-from app.core.regressor import SalePriceRegressor
 from app.core.config import get_settings
-from app.schemas.sales import SalesCreate
+from app.core.regressor import SalePriceRegressor
 from app.schemas.prediction import SalePricePredictionResult
+from app.schemas.sales import SalesCreate
 from tests.data import TEST_IN_DATA, TEST_PREPROCESSED_DATA
 
 
@@ -22,7 +22,9 @@ def test_preprocess_data() -> None:
     sales_create_data = SalesCreate(**TEST_IN_DATA)
     # get the results from preproccesor
     result = model._pre_process(dict(sales_create_data))
-    test_out_data = np.asarray(list(map(float,TEST_PREPROCESSED_DATA.values()))).reshape(1, -1)
+    test_out_data = np.asarray(
+        list(map(float, TEST_PREPROCESSED_DATA.values()))
+    ).reshape(1, -1)
 
     # Result from prediction should be of type array (of features)
     assert isinstance(result, np.ndarray)
@@ -38,11 +40,10 @@ def test_post_process_data() -> None:
 
     dummy_data = [100]
     post_processed_data = model._post_process(dummy_data)
-    
+
     # Result from prediction should be of type array (of features)
     assert isinstance(post_processed_data, type(SalePricePredictionResult(price=100)))
     # The # of features in the list should be the same as whats expected by the model
     assert isinstance(post_processed_data.price, int)
     assert post_processed_data.currency == "USD"
     assert post_processed_data.price == 100
-

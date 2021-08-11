@@ -1,21 +1,21 @@
-import sys
 import os
-import pytest
-from typing import Any
-from typing import Generator
+import sys
+from typing import Any, Generator
 
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.db.base import Base
-from app.db.session import get_db
 from app.apis.base import api_router
 from app.core.config import Settings
 from app.core.regressor import SalePriceRegressor
+from app.db.base import Base
+from app.db.session import get_db
+
 
 def get_settings_override():
     return Settings(TESTING=1, DATABASE_URL=os.getenv("DATABASE_TEST_URL"))
@@ -25,7 +25,7 @@ def start_application():
     settings = get_settings_override()
     app = FastAPI()
     app.include_router(api_router, prefix=settings.PROJECT_API_PREFIX)
-    
+
     model_path = settings.DEFAULT_MODEL_PATH
     model_instance = SalePriceRegressor(path=model_path)
     app.state.model = model_instance
@@ -34,11 +34,7 @@ def start_application():
 
 settings = get_settings_override()
 engine = create_engine(settings.DATABASE_URL)
-SessionTesting = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-    )
+SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 @pytest.fixture(scope="function")
@@ -65,7 +61,9 @@ def db_session(app: FastAPI) -> Generator[SessionTesting, Any, None]:
 
 
 @pytest.fixture(scope="function")
-def client(app: FastAPI, db_session: SessionTesting) -> Generator[TestClient, Any, None]:
+def client(
+    app: FastAPI, db_session: SessionTesting
+) -> Generator[TestClient, Any, None]:
     """
     Create a new FastAPI TestClient that uses the `db_session` fixture to override
     the `get_db` dependency that is injected into routes.

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, Float, String, DateTime, Date
+from sqlalchemy import Column, Date, DateTime, Float, Integer, String
 from sqlalchemy.sql.sqltypes import Boolean
 
 from app.db.base_class import Base
@@ -29,7 +29,7 @@ class Sales(Base):
     state = Column(String, nullable=True)
     product_group = Column(String, nullable=True)
     product_group_desc = Column(String, nullable=True)
-    
+
     drive_system = Column(String, nullable=True)
     enclosure = Column(String, nullable=True)
     ride_control = Column(String, nullable=True)
@@ -50,5 +50,3 @@ class Sales(Base):
     steering_controls = Column(String, nullable=True)
     engine_horsepower = Column(Float, nullable=True)
     is_new = Column(Boolean, default=False)
-
-        

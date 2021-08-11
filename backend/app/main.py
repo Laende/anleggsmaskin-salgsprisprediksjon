@@ -2,10 +2,9 @@ import logging
 
 from fastapi import FastAPI
 
+from .apis.base import api_router
 from .core.config import Settings, get_settings
 from .core.event_handlers import start_app_handler, stop_app_handler
-from .apis.base import api_router
-
 
 log = logging.getLogger("uvicorn")
 
@@ -18,11 +17,8 @@ def get_application() -> FastAPI:
     # Get settings
     settings = get_settings()
 
-    _app = FastAPI(
-        title=settings.PROJECT_TITLE,
-        version=settings.PROJECT_VERSION
-        )
-    
+    _app = FastAPI(title=settings.PROJECT_TITLE, version=settings.PROJECT_VERSION)
+
     # Include routers, see apis/base.py for list of routers
     include_routers(app=_app, settings=settings)
 
