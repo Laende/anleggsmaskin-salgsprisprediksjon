@@ -8,8 +8,8 @@ uvicorn
 python-dotenv
 
 # For databases
-asyncpg
-tortoise-orm
+sqlalchemy
+psycopg2-binary
 
 # For migrations
 aerich
@@ -21,3 +21,18 @@ pytest-cov
 
 # For model validations
 pydantic
+
+# For numeric data calcs
+numpy
+
+# Loading model
+joblib
+
+# for models
+scikit-learn
+
+# For feature engineering
+pandas
+
+#production-grade WSGI server
+gunicorn

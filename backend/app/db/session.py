@@ -1,44 +1,44 @@
-from os import getenv
 from logging import getLogger
+from typing import Generator
+import re
 
-from fastapi import FastAPI
-from tortoise import Tortoise, run_async
-from tortoise.contrib.fastapi import register_tortoise
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm.session import Session
+import pandas as pd
+
+from app.core.config import get_settings
+from app.db.models.sales import Sales
 
 
 log = getLogger("uvicorn")
-TORTOISE_ORM = {
-    "connections": {"default": getenv("DATABASE_URL")},
-    "apps": {
-        "models": {
-            "models": ["aerich.models"],
-            "default_connection": "default",
-        },
-    },
-}
 
 
-def init_db(app: FastAPI) -> None:
-    register_tortoise(
-        app,
-        db_url=getenv("DATABASE_URL"),
-        modules={"models": []},
-        generate_schemas=False,
-        add_exception_handlers=True,
-    )
+def get_db() -> Generator:
+    try:
+        db = SESSION()
+        yield db
+    finally:
+        db.close()
 
 
-async def generate_schema() -> None:
-    log.info("Initializing Tortoise...")
+def init_db() -> None:
+    settings = get_settings()
+    db = SESSION()
+    is_empty = db.query(Sales).first()
+    if is_empty is None:
 
-    await Tortoise.init(
-        db_url=getenv("DATABASE_URL"),
-        modules={"models": []},
-    )
-    log.info("Generating database schema via Tortoise...")
-    await Tortoise.generate_schemas()
-    await Tortoise.close_connections()
+        df = pd.read_csv(settings.DEFAULT_DATA_PATH,
+        parse_dates=["saledate"],
+        sep=',',
+        low_memory = False
+        )
+        df.drop(["SalesID"], axis=1, inplace=True)
+        log.info("Sales table is empty, filling it with dataset.")
 
+        df.to_sql("sales", con=ENGINE, if_exists='append', index=False)
+    
 
-if __name__ == "__main__":
-    run_async(generate_schema())
+ENGINE: Engine = create_engine(get_settings().DATABASE_URL, pool_pre_ping=True) 
+SESSION: Session = sessionmaker(autocommit=False,autoflush=False,bind=ENGINE)
