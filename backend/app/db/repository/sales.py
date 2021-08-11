@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from app.db.models.sales import Sales
 from app.schemas.sales import SalesCreate
 
-
 log = getLogger("uvicorn")
 
 

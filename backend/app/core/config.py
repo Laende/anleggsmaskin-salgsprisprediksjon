@@ -8,7 +8,6 @@ from pydantic import AnyUrl, BaseSettings
 from app.core.lists import (ALL_FEATURES_LIST, COLUMN_CODES_FEATURES,
                             DATETIME_LIST, STATE_LIST)
 
-
 log = getLogger(__name__)
 
 

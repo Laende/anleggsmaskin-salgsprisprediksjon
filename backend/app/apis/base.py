@@ -2,7 +2,6 @@ from fastapi import APIRouter
 
 from app.apis.v1 import route_pings, route_predict, route_sales
 
-
 api_router = APIRouter()
 
 

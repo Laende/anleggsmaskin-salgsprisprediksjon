@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends
 
+from app.core.config import Settings, get_settings
 from app.schemas.ping import PingResult
-from app.core.config import get_settings, Settings
-
 
 router = APIRouter()
 

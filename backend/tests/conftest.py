@@ -1,7 +1,7 @@
 import os
 import sys
-from typing import Any, Generator
 from logging import getLogger
+from typing import Any, Generator
 
 import pytest
 from fastapi import FastAPI
@@ -11,13 +11,11 @@ from sqlalchemy.orm import sessionmaker
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.core.config import get_settings
 from app.apis.base import api_router
-from app.core.config import Settings
+from app.core.config import Settings, get_settings
 from app.core.regressor import SalePriceRegressor
 from app.db.base import Base
 from app.db.session import get_db
-
 
 log = getLogger("uvicorn")
 settings = get_settings()

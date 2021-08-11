@@ -10,7 +10,6 @@ from app.db.session import get_db
 from app.schemas.prediction import SalePricePredictionResult
 from app.schemas.sales import SalesCreate, SalesShow
 
-
 router = APIRouter()
 log = getLogger("uvicorn")
 

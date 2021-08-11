@@ -4,14 +4,13 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.security import authenticate
 from app.db.models.sales import Sales
 from app.db.repository.sales import (create_new_sales, delete_sales_by_id,
                                      get_sale_by_id, list_sales,
                                      retrieve_sales_by_new)
 from app.db.session import get_db
 from app.schemas.sales import SalesCreate, SalesShow
-from app.core.security import authenticate
-
 
 router = APIRouter()
 log = getLogger(__name__)

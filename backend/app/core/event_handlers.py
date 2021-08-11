@@ -1,6 +1,7 @@
 from logging import getLogger
-from typing import Callable
 from os import getenv
+from typing import Callable
+
 from fastapi import FastAPI
 
 from app.core.config import get_settings

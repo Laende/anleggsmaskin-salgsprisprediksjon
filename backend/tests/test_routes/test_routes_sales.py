@@ -1,7 +1,6 @@
 import json
 
 from app.core.config import get_settings
-
 from tests.data import TEST_IN_DATA
 
 
