@@ -2,8 +2,6 @@ import logging
 
 from fastapi import FastAPI
 
-from app import __version__
-
 from .apis.base import api_router
 from .core.config import Settings, get_settings
 from .core.event_handlers import start_app_handler, stop_app_handler

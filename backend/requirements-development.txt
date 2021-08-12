@@ -1,0 +1,15 @@
+# Linting
+flake8
+
+# Code formatting
+black
+
+# Sort imports
+isort
+
+# For testing
+pytest
+pytest-cov
+pytest-xdist
+
+-r requirements.txt

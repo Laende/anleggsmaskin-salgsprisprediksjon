@@ -1,62 +1,80 @@
 import json
 
+import pytest
 from app.core.config import get_settings
+from app.apis.v1 import route_sales
 
 
-def test_create_sale(client, input_data) -> None:
+@pytest.fixture(scope="module")
+def create_result() -> dict:
+    return {'saleprice': 58000, 'saledate': '2010-12-28', 'product_group': 'wl', 'engine_horsepower_desc': 'variable', 'undercarriage_pad_width': 30.0, 'fi_model_desc': 'hl740tm7a', 'product_group_desc': 'wheel loader', 'hydraulics': '2 valve', 'stick_length': '', 'fi_base_model': 'hl740', 'drive_system': '', 'ripper': '', 'grouser_type': '', 'data_source': 149, 'fi_secondary_desc': 'tm', 'enclosure': 'erops ac', 'blade_type': '', 'differential_type': 'standard', 'auctioneer_id': '27', 'fi_model_series': '7', 'ride_control': '', 'tire_size': 20.5, 'steering_controls': 'conventional', 'year_made': 2008, 'fi_model_descriptor': 'a', 'stick': '', 'coupler': '', 'engine_horsepower': 142.5, 'machine_hours_current_meter': 1455, 'product_size': 'medium', 'transmission': '', 'hydraulics_flow': '', 'is_new': True, 'model_id': 15461, 'state': 'north carolina', 'track_type': ''}
 
+@pytest.fixture(scope="module")
+def get_result() -> dict:
+    return {'id': 1, 'saleprice': 58000, 'saledate': '2010-12-28', 'product_group': 'wl', 'engine_horsepower_desc': 'variable', 'undercarriage_pad_width': 30.0, 'fi_model_desc': 'hl740tm7a', 'product_group_desc': 'wheel loader', 'hydraulics': '2 valve', 'stick_length': '', 'fi_base_model': 'hl740', 'drive_system': '', 'ripper': '', 'grouser_type': '', 'data_source': 149, 'fi_secondary_desc': 'tm', 'enclosure': 'erops ac', 'blade_type': '', 'differential_type': 'standard', 'auctioneer_id': '27', 'fi_model_series': '7', 'ride_control': '', 'tire_size': 20.5, 'steering_controls': 'conventional', 'year_made': 2008, 'fi_model_descriptor': 'a', 'stick': '', 'coupler': '', 'engine_horsepower': 142.5, 'machine_hours_current_meter': 1455, 'product_size': 'medium', 'transmission': '', 'hydraulics_flow': '', 'is_new': True, 'model_id': 15461, 'state': 'north carolina', 'track_type': ''}
+
+
+def test_create_sale(client, monkeypatch, input_data, create_result) -> None:
+
+    async def mock_post(sale):
+        return 1
+
+    monkeypatch.setattr(route_sales, "create_sale", mock_post)
     response = client.post("/sales/create-sale", data=json.dumps(input_data))
     assert response.status_code == 200
-    assert response.json()["model_id"] == input_data["model_id"]
-    assert response.json()["saledate"] == input_data["saledate"]
-    assert response.json()["engine_horsepower"] == input_data["engine_horsepower"]
-    assert response.json()["year_made"] == input_data["year_made"]
-    assert response.json()["data_source"] == input_data["data_source"]
-    assert response.json()["auctioneer_id"] == input_data["auctioneer_id"]
+    assert response.json() == create_result
 
 
-def test_retrieve_sale_by_id(client, input_data) -> None:
+def test_retrieve_sale_by_id(client, monkeypatch, input_data, get_result) -> None:
+    
+    async def mock_post(sale):
+        return 1
+
+    async def mock_get(id):
+        return get_result
+
+    monkeypatch.setattr(route_sales, "create_sale", mock_post)
     client.post("/sales/create-sale", data=json.dumps(input_data))
-
     # Try to retrieve the recently created sale (it will have id of 1)
+    monkeypatch.setattr(route_sales, "get_sale", mock_get)
     response = client.get("/sales/get/1")
+
     assert response.status_code == 200
-    assert response.json()["model_id"] == input_data["model_id"]
-    assert response.json()["saledate"] == input_data["saledate"]
-    assert response.json()["engine_horsepower"] == input_data["engine_horsepower"]
-    assert response.json()["year_made"] == input_data["year_made"]
-    assert response.json()["data_source"] == input_data["data_source"]
-    assert response.json()["auctioneer_id"] == input_data["auctioneer_id"]
+    assert response.json() == get_result
 
 
-def test_retrieve_sale_by_non_existing_id(client, input_data) -> None:
-    # Do a prediction, this will also create a row with given data in DB
-    client.post("/sales/create-sale", data=json.dumps(input_data))
-
-    # Try to retrieve a sale that doesnt exist (there should be 1 sale in the db with id 1)
-    response = client.get("/sales/get/2")
+def test_retrieve_sale_by_non_existing_id(client) -> None:
+    # Try to retrieve a sale that doesnt exist
+    response = client.get("/sales/get/1")
     assert response.status_code == 404
-    assert response.json()["detail"] == "Sale with id 2 does not exist."
+    assert response.json()["detail"] == "Sale with id 1 does not exist."
 
 
-def test_delete_sale_by_id(client, input_data) -> None:
+def test_delete_sale_by_id(client, monkeypatch, input_data) -> None:
+
+    async def mock_post(id):
+        return 1
+    
+    async def mock_delete(id):
+        return id
+
+    monkeypatch.setattr(route_sales, "create_sale", mock_post)
     client.post("/sales/create-sale", data=json.dumps(input_data))
-    headers = {"token": str(get_settings().API_KEY)}
 
-    # Try to delete the recently created sale (it will have id of 1)
+    headers = {"token": str(get_settings().API_KEY)}
+    monkeypatch.setattr(route_sales, "delete_sale", mock_delete)
     response = client.delete("/sales/delete/1", headers=headers)
+
     assert response.status_code == 200
     assert response.json() == True
 
 
-def test_delete_sale_by_non_existing_id(client, input_data) -> None:
+def test_delete_sale_by_non_existing_id(client) -> None:
     headers = {"token": str(get_settings().API_KEY)}
-    client.post("/sales/create-sale", data=json.dumps(input_data))
-
     # Try to delete a sale that doesnt exist (there should be 1 sale in the db with id 1)
-    response = client.delete("/sales/delete/2", headers=headers)
+    response = client.delete("/sales/delete/1", headers=headers)
     assert response.status_code == 404
-    assert response.json()["detail"] == "Sale with id 2 does not exist."
+    assert response.json()["detail"] == "Sale with id 1 does not exist."
 
 
 def test_get_sale_by_new_filter(client, input_data) -> None:
@@ -105,10 +123,7 @@ def test_get_sale_by_new_filter(client, input_data) -> None:
     }
 
 
-def test_get_sale_by_new_filter_doesnt_exist(client, input_data) -> None:
-    # Do a prediction, this will also create a row with given data in DB with is_new = False
-    client.post("/sales/create-sale", data=json.dumps(input_data))
-
+def test_get_sale_by_new_filter_doesnt_exist(client) -> None:
     # Try to retrieve sales filtered by get_new (bool)
     response = client.get("/sales/get-new/False")
     assert response.status_code == 404

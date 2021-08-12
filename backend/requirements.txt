@@ -14,10 +14,7 @@ psycopg2-binary
 # For migrations
 aerich
 
-# For testing
-pytest
 requests
-pytest-cov
 
 # For model validations
 pydantic
@@ -36,12 +33,3 @@ pandas
 
 #production-grade WSGI server
 gunicorn
-
-# Linting
-flake8
-
-# Code formatting
-black
-
-# Sort imports
-isort

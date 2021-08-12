@@ -1,12 +1,25 @@
 import json
 
+import pytest
 
-def test_make_prediction(client, input_data) -> None:
+from app.schemas.prediction import SalePricePredictionResult
+from app.apis.v1 import route_predict
+
+@pytest.fixture(scope="function")
+def prediction_result():
+    return SalePricePredictionResult(price=62500)
+
+
+def test_make_prediction(client, input_data, monkeypatch, prediction_result) -> None:
+
+    def mock_post(sale):
+        return 1
+    
+    monkeypatch.setattr(route_predict, "predict_price", mock_post)
     response = client.post("/predict/saleprice", data=json.dumps(input_data))
     assert response.status_code == 200
     assert isinstance(response.json()["price"], int)
-    assert response.json()["currency"] == "USD"
-    assert response.json()["price"] == 62500
+    assert response.json() == prediction_result
 
 def test_make_prediction_with_empty_data(client) -> None:
     response = client.post("/predict/saleprice", data=json.dumps({}))

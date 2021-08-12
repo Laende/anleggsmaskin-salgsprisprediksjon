@@ -3,6 +3,7 @@ FROM python:3.9.6-slim-buster
 
 # Make sure working dir exists
 RUN mkdir -p /usr/src/app
+
 # set working directory
 WORKDIR /usr/src/app
 
@@ -13,13 +14,13 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # install system dependencies
-RUN apt-get update && apt-get -y install netcat gcc && apt-get clean
+RUN apt-get update && apt-get -y install netcat gcc postgresql  && apt-get clean
 
 # Upgrade pip to latest
 RUN pip install --upgrade pip
-# Install pip requirements
-COPY requirements.txt .
-RUN python -m pip install -r requirements.txt
+COPY ./requirements.txt .
+COPY ./requirements-development.txt .
+RUN pip install -r requirements-development.txt
 
 # add app
 COPY . .

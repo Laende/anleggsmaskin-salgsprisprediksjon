@@ -31,8 +31,7 @@ class SalePriceRegressor(object):
     def _load_local_model(self):
         self.model = joblib.load(self.path)
 
-    def _pre_process(self, input_data: SalesCreate) -> List:
-        # Create a dataframe from the input data, the input data is a dict
+    def _add_and_remove_df_columns(self, input_data) -> pd.DataFrame:
         df = pd.DataFrame([input_data])
 
         # Make sure saledate is of datetime type
@@ -56,16 +55,17 @@ class SalePriceRegressor(object):
             if col not in df.columns:
                 df[col] = 0
 
+        return df
+
+    def _fill_state_in_df(self, df) -> pd.DataFrame:
         # One-hot encode the state column, this will fill a 1 into the correct in_state column
         if df.at[0, "state"] != "":
-            df = pd.get_dummies(df, columns=["state"], prefix=["in_state"])
-        else:
-            df.drop(["state"], axis=1, inplace=True)
+            df.loc[:, df.columns.str.contains(df.at[0, "state"].lower())] = 1
+        
+        df.drop(["state"], axis=1, inplace=True)
+        return df
 
-        # All features should be in df now, order them as expected by model
-        df = df[self.features_list]
-
-        df["machine_hours_current_meter"] = df["machine_hours_current_meter"].astype("int")
+    def _fill_df_with_numbers(self, df) -> pd.DataFrame:
         # Fill string type columns with numbers. Check if string exists in feature dict, if it does return the code.
         for label, content in df.items():
             if pd.api.types.is_string_dtype(content):
@@ -79,10 +79,24 @@ class SalePriceRegressor(object):
                     df[label] = result
                 except ValueError as e:
                     df[label] = 0
-
-        
         df = df.astype(float)
-        out = np.array(list(df.to_dict(orient="records")[0].values())).reshape(1, -1)
+        return df
+
+    def _pre_process(self, input_data: SalesCreate) -> List:
+  
+        # Create a dataframe from the input data, the input data is a dict
+        df = self._add_and_remove_df_columns(input_data)
+        df = self._fill_state_in_df(df)
+
+        # All features should be in df now, order them as expected by model
+        df = df[self.features_list]
+
+        df["machine_hours_current_meter"] = df["machine_hours_current_meter"].astype("int")
+        
+        df = self._fill_df_with_numbers(df)
+
+        features_to_dict = df.to_dict(orient="records")
+        out = np.array(list(features_to_dict[0].values())).reshape(1, -1)
         return out
 
     def _post_process(self, prediction: np.ndarray) -> SalePricePredictionResult:
