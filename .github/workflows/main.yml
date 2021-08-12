@@ -77,8 +77,8 @@ jobs:
             -e DATABASE_TEST_URL=sqlite:///sqlite.db \
             -p 5003:8765 \
             ${{ env.IMAGE }}-final:latest
-      - name: Install requirements
-        run: docker exec salgsprisprediksjon pip install isort pytest
+      # - name: Install requirements
+      #   run: docker exec salgsprisprediksjon pip install isort pytest
       # - name: Pytest
       #   run: docker exec salgsprisprediksjon python -m pytest .
       # - name: Flake8
