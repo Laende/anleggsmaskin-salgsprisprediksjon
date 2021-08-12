@@ -38,8 +38,7 @@ def test_in_state_columns_are_added_to_df(input_data, model) -> None:
         (TEST_IN_DATA[1], TEST_PREPROCESSED_DATA[1]),
         (TEST_IN_DATA[2], TEST_PREPROCESSED_DATA[2]),
         (TEST_IN_DATA[3], TEST_PREPROCESSED_DATA[3]),
-        (TEST_IN_DATA[4], TEST_PREPROCESSED_DATA[4]),
-        (TEST_IN_DATA[5], TEST_PREPROCESSED_DATA[5])
+        (TEST_IN_DATA[4], TEST_PREPROCESSED_DATA[4])
         ]
     )
 def test_preprocess_data(input, output, model) -> None:
@@ -52,7 +51,9 @@ def test_preprocess_data(input, output, model) -> None:
     # The # of features in the list should be the same as whats expected by the model
     assert len(result) == len(test_out_data)
     # Check if the result matches the expected output data
-    assert (result == test_out_data).all()
+
+    assert (np.allclose(np.array(result), np.array(test_out_data))) == True
+
 
 def test_post_process_data(model) -> None:
     dummy_data = [100]
