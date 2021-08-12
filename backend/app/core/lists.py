@@ -155,7 +155,16 @@ ALL_FEATURES_LIST = [
     "in_state_wyoming",
 ]
 
+MEDIAN_VALUES = {
+    "year_made": 1996,
+    "machine_hours_current_meter": 3213,
+    "tire_size": 20.0,
+    "undercarriage_pad_width": 30.0
+    }
 
+DTYPES_LIST = {
+    
+}
 COLUMN_CODES_FEATURES = {
     "auctioneer_id": {
         "19": "18",

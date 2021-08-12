@@ -42,5 +42,5 @@ def init_db() -> None:
         )
         df.drop(["SalesID"], axis=1, inplace=True)
         log.info("Sales table is empty, filling it with dataset.")
-        df2 = df.head(10000)
+        df2 = df.sample(n=500)
         df2.to_sql("sales", con=ENGINE, if_exists="append", index=False)

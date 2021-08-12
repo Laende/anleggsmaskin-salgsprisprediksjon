@@ -1,38 +1,37 @@
 import json
 
 from app.core.config import get_settings
-from tests.data import TEST_IN_DATA
 
 
-def test_create_sale(client) -> None:
-    response = client.post("/sales/create-sale", data=json.dumps(TEST_IN_DATA))
-    print(get_settings().DATABASE_TEST_URL)
+def test_create_sale(client, input_data) -> None:
+
+    response = client.post("/sales/create-sale", data=json.dumps(input_data))
     assert response.status_code == 200
-    assert response.json()["model_id"] == TEST_IN_DATA["model_id"]
-    assert response.json()["saledate"] == TEST_IN_DATA["saledate"]
-    assert response.json()["engine_horsepower"] == TEST_IN_DATA["engine_horsepower"]
-    assert response.json()["year_made"] == TEST_IN_DATA["year_made"]
-    assert response.json()["data_source"] == TEST_IN_DATA["data_source"]
-    assert response.json()["auctioneer_id"] == TEST_IN_DATA["auctioneer_id"]
+    assert response.json()["model_id"] == input_data["model_id"]
+    assert response.json()["saledate"] == input_data["saledate"]
+    assert response.json()["engine_horsepower"] == input_data["engine_horsepower"]
+    assert response.json()["year_made"] == input_data["year_made"]
+    assert response.json()["data_source"] == input_data["data_source"]
+    assert response.json()["auctioneer_id"] == input_data["auctioneer_id"]
 
 
-def test_retrieve_sale_by_id(client) -> None:
-    client.post("/sales/create-sale", data=json.dumps(TEST_IN_DATA))
+def test_retrieve_sale_by_id(client, input_data) -> None:
+    client.post("/sales/create-sale", data=json.dumps(input_data))
 
     # Try to retrieve the recently created sale (it will have id of 1)
     response = client.get("/sales/get/1")
     assert response.status_code == 200
-    assert response.json()["model_id"] == TEST_IN_DATA["model_id"]
-    assert response.json()["saledate"] == TEST_IN_DATA["saledate"]
-    assert response.json()["engine_horsepower"] == TEST_IN_DATA["engine_horsepower"]
-    assert response.json()["year_made"] == TEST_IN_DATA["year_made"]
-    assert response.json()["data_source"] == TEST_IN_DATA["data_source"]
-    assert response.json()["auctioneer_id"] == TEST_IN_DATA["auctioneer_id"]
+    assert response.json()["model_id"] == input_data["model_id"]
+    assert response.json()["saledate"] == input_data["saledate"]
+    assert response.json()["engine_horsepower"] == input_data["engine_horsepower"]
+    assert response.json()["year_made"] == input_data["year_made"]
+    assert response.json()["data_source"] == input_data["data_source"]
+    assert response.json()["auctioneer_id"] == input_data["auctioneer_id"]
 
 
-def test_retrieve_sale_by_non_existing_id(client) -> None:
+def test_retrieve_sale_by_non_existing_id(client, input_data) -> None:
     # Do a prediction, this will also create a row with given data in DB
-    client.post("/sales/create-sale", data=json.dumps(TEST_IN_DATA))
+    client.post("/sales/create-sale", data=json.dumps(input_data))
 
     # Try to retrieve a sale that doesnt exist (there should be 1 sale in the db with id 1)
     response = client.get("/sales/get/2")
@@ -40,8 +39,8 @@ def test_retrieve_sale_by_non_existing_id(client) -> None:
     assert response.json()["detail"] == "Sale with id 2 does not exist."
 
 
-def test_delete_sale_by_id(client) -> None:
-    client.post("/sales/create-sale", data=json.dumps(TEST_IN_DATA))
+def test_delete_sale_by_id(client, input_data) -> None:
+    client.post("/sales/create-sale", data=json.dumps(input_data))
     headers = {"token": str(get_settings().API_KEY)}
 
     # Try to delete the recently created sale (it will have id of 1)
@@ -50,9 +49,9 @@ def test_delete_sale_by_id(client) -> None:
     assert response.json() == True
 
 
-def test_delete_sale_by_non_existing_id(client) -> None:
+def test_delete_sale_by_non_existing_id(client, input_data) -> None:
     headers = {"token": str(get_settings().API_KEY)}
-    client.post("/sales/create-sale", data=json.dumps(TEST_IN_DATA))
+    client.post("/sales/create-sale", data=json.dumps(input_data))
 
     # Try to delete a sale that doesnt exist (there should be 1 sale in the db with id 1)
     response = client.delete("/sales/delete/2", headers=headers)
@@ -60,8 +59,8 @@ def test_delete_sale_by_non_existing_id(client) -> None:
     assert response.json()["detail"] == "Sale with id 2 does not exist."
 
 
-def test_get_sale_by_new_filter(client) -> None:
-    client.post("/sales/create-sale", data=json.dumps(TEST_IN_DATA))
+def test_get_sale_by_new_filter(client, input_data) -> None:
+    client.post("/sales/create-sale", data=json.dumps(input_data))
 
     # Try to retrieve sales filtered by get_new (bool)
     response = client.get("/sales/get-new/True")
@@ -106,9 +105,9 @@ def test_get_sale_by_new_filter(client) -> None:
     }
 
 
-def test_get_sale_by_new_filter_doesnt_exist(client) -> None:
+def test_get_sale_by_new_filter_doesnt_exist(client, input_data) -> None:
     # Do a prediction, this will also create a row with given data in DB with is_new = False
-    client.post("/sales/create-sale", data=json.dumps(TEST_IN_DATA))
+    client.post("/sales/create-sale", data=json.dumps(input_data))
 
     # Try to retrieve sales filtered by get_new (bool)
     response = client.get("/sales/get-new/False")

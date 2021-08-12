@@ -12,9 +12,7 @@ class SalesBase(BaseModel):
 
     year_made: Optional[int] = 1996  # Median of yearmade in the dataset
 
-    machine_hours_current_meter: Optional[
-        int
-    ] = 3213  # Median of MachineHoursCurrentMeter in the dataset
+    machine_hours_current_meter: Optional[int] = 3213  # Median of MachineHoursCurrentMeter in the dataset
 
     saledate: Optional[date] = datetime.now().date()
 
@@ -42,9 +40,7 @@ class SalesBase(BaseModel):
     coupler: Optional[str] = None
     hydraulics_flow: Optional[str] = None
     track_type: Optional[str] = None
-    undercarriage_pad_width: Optional[
-        float
-    ] = 30.0  # Median of Undercarriage_Pad_Width in the dataset
+    undercarriage_pad_width: Optional[float] = 30.0  # Median of Undercarriage_Pad_Width in the dataset
     stick_length: Optional[str] = None
     grouser_type: Optional[str] = None
     blade_type: Optional[str] = None

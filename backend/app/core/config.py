@@ -9,7 +9,7 @@ from app.core.lists import (ALL_FEATURES_LIST, COLUMN_CODES_FEATURES,
                             DATETIME_LIST, STATE_LIST)
 
 log = getLogger(__name__)
-
+DATABASE_TEST_URL = "sqlite:///sqlite.db"
 
 class Settings(BaseSettings):
     PROJECT_API_PREFIX: str = ""
@@ -17,8 +17,6 @@ class Settings(BaseSettings):
     ### Environment and development settings
     ENVIRONMENT: str = getenv("ENVIRONMENT")
     TESTING: bool = getenv("TESTING")
-
-    DATABASE_TEST_URL = getenv("DATABASE_TEST_URL")
 
     # Model related stuff
     DEFAULT_MODEL_PATH: str = getenv("DEFAULT_MODEL_PATH")

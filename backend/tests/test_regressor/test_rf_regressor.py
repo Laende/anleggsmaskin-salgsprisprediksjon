@@ -1,30 +1,31 @@
 from pathlib import Path
 
 import numpy as np
+import pytest
 
-from app.core.config import get_settings
-from app.core.regressor import SalePriceRegressor
 from app.schemas.prediction import SalePricePredictionResult
 from app.schemas.sales import SalesCreate
 from tests.data import TEST_IN_DATA, TEST_PREPROCESSED_DATA
 
 
-def test_is_model_path_valid() -> None:
-    settings = get_settings()
+
+def test_is_model_path_valid(settings) -> None:
     assert Path(settings.DEFAULT_MODEL_PATH).is_file() == True
 
-
-def test_preprocess_data() -> None:
-    settings = get_settings()
-    # Create the model
-    model = SalePriceRegressor(path=settings.DEFAULT_MODEL_PATH)
-    # Create a SalesCreate with test_in_data
-    sales_create_data = SalesCreate(**TEST_IN_DATA)
+@pytest.mark.parametrize("input, output",
+    [
+        (TEST_IN_DATA[0], TEST_PREPROCESSED_DATA[0]),
+        (TEST_IN_DATA[1], TEST_PREPROCESSED_DATA[1]),
+        (TEST_IN_DATA[2], TEST_PREPROCESSED_DATA[2]),
+        (TEST_IN_DATA[3], TEST_PREPROCESSED_DATA[3]),
+        (TEST_IN_DATA[4], TEST_PREPROCESSED_DATA[4]),
+        (TEST_IN_DATA[5], TEST_PREPROCESSED_DATA[5])
+        ]
+    )
+def test_preprocess_data(input, output, model) -> None:
     # get the results from preproccesor
-    result = model._pre_process(dict(sales_create_data))
-    test_out_data = np.asarray(
-        list(map(float, TEST_PREPROCESSED_DATA.values()))
-    ).reshape(1, -1)
+    result = model._pre_process(dict(SalesCreate(**input)))
+    test_out_data = np.asarray(list(map(float, output.values()))).reshape(1, -1)
 
     # Result from prediction should be of type array (of features)
     assert isinstance(result, np.ndarray)
@@ -34,10 +35,7 @@ def test_preprocess_data() -> None:
     assert (result == test_out_data).all()
 
 
-def test_post_process_data() -> None:
-    settings = get_settings()
-    model = SalePriceRegressor(path=settings.DEFAULT_MODEL_PATH)
-
+def test_post_process_data(model) -> None:
     dummy_data = [100]
     post_processed_data = model._post_process(dummy_data)
 
