@@ -1,5 +1,4 @@
 from logging import getLogger
-from os import getenv
 from typing import Generator
 
 import pandas as pd
@@ -11,7 +10,7 @@ from sqlalchemy.orm.session import Session
 from app.core.config import get_settings
 from app.db.models.sales import Sales
 
-log = getLogger("uvicorn")
+log = getLogger(__name__)
 settings = get_settings()
 
 if settings.TESTING:

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.db.models.sales import Sales
 from app.schemas.sales import SalesCreate
 
-log = getLogger("uvicorn")
+log = getLogger(__name__)
 
 
 async def create_new_sales(sale: SalesCreate, db: Session):

@@ -5,7 +5,6 @@ from pydantic import BaseModel
 
 
 class SalepricePredictionBase(BaseModel):
-    saleprice: Optional[int] = None
     model_id: Optional[int] = None
     data_source: Optional[int] = None
     auctioneer_id: Optional[str] = None

@@ -13,9 +13,6 @@ from app.schemas.sales import SalesCreate
 
 log = getLogger(__name__)
 
-pd.set_option("display.max.rows", None)
-pd.set_option("display.max.columns", None)
-
 class SalePriceRegressor(object):
     def __init__(self, path):
         self.path = path
@@ -112,7 +109,7 @@ class SalePriceRegressor(object):
         if input_data is None:
             raise ValueError(f"{input_data} is not valid.")
 
-        pre_processed_payload = self._pre_process(dict(input_data))
+        pre_processed_payload = self._pre_process(input_data)
         prediction = self._predict(pre_processed_payload)
         log.info(f"predicted saleprice: {prediction[0]}")
         post_processed_result = self._post_process(prediction)

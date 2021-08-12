@@ -9,7 +9,7 @@ from app.core.regressor import SalePriceRegressor
 from app.db.base import Base
 from app.db.session import ENGINE, init_db
 
-log = getLogger("uvicorn")
+log = getLogger(__name__)
 settings = get_settings()
 
 def _create_tables():
