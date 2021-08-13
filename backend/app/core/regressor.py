@@ -91,7 +91,6 @@ class SalePriceRegressor(object):
         df["machine_hours_current_meter"] = df["machine_hours_current_meter"].astype("int")
         
         df = self._fill_df_with_numbers(df)
-
         features_to_dict = df.to_dict(orient="records")
         out = np.array(list(features_to_dict[0].values())).reshape(1, -1)
         return out
